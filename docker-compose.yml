@@ -16,4 +16,5 @@ services:
     environment:
       - MULE_ENV=dev
     volumes:
-      - ./mulesoft:/opt/mule/app
+      - ./mulesoft/compiled_mulesoft:/opt/mule/app
+     
