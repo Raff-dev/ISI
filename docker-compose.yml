@@ -9,12 +9,12 @@ services:
       - ./translate:/app
 
   mule:
-    image: codingtony/mule
+    image: wslph/mule:4.4.0-20220321-ee-2022-07-14
     ports:
       - "8081:8081"
     restart: always
     environment:
       - MULE_ENV=dev
     volumes:
-      - ./mulesoft/compiled_mulesoft:/opt/mule/app
+      - ./mulesoft/compiled_mulesoft:/opt/mule/apps/isi_working
      
