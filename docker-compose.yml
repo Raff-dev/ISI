@@ -1,9 +1,19 @@
 version: '3.8'
 
 services:
-  app:
+  translate:
     build: ./translate
     ports:
       - 8000:8000
     volumes:
-      - .:/app
+      - ./translate:/app
+
+  mule:
+    image: codingtony/mule
+    ports:
+      - "8081:8081"
+    restart: always
+    environment:
+      - MULE_ENV=dev
+    volumes:
+      - ./mulesoft:/opt/mule/app
