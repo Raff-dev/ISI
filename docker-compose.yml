@@ -9,31 +9,33 @@ services:
       - ./translate:/app
 
   mule:
-    image: wslph/mule:4.4.0-20220321-ee-2022-07-14
+    build: mulesoft
     ports:
-      - "8081:8081"
+      - 8081:8081
     depends_on:
       - translate
     restart: always
     volumes:
-      - ./mulesoft/compiled_mulesoft:/opt/mule/apps/isi_working
+      - ./mulesoft/apps:/opt/mule/apps
     environment:
       - MULE_ENV=dev
 
   react:
     build: frontend
     ports:
-      - "3000:3000"
+      - 3000:3000
+    depends_on:
+      - django
     restart: always
     volumes:
-      - "./frontend:/app"
+      - ./frontend:/app
 
   django:
     build: backend
     ports:
-      - "8001:8000"
+      - 8001:8001
     restart: always
     volumes:
-      - "./backend:/app"
+      - ./backend:/app
     env_file:
       - ./backend/.env
