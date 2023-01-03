@@ -1,0 +1,31 @@
+
+# ISI Integration Project
+
+## Prerequisites
+
+In order to run the stack locally, you're going to need [Docker](https://docs.docker.com/engine/install/ubuntu/) along with the Docker Compose plugin.
+
+---
+
+## Running the stack
+
+Here's how to get you started:
+
+```bash
+# copy django .env file from example
+cp backend/.env.example backend/.env
+
+# run the docker services
+docker compose up -d
+```
+
+---
+
+## More information
+
+Have a look at specific services' READMEs here 🤓:
+
+ * [FastAPI translation service](translate/README.md)
+ * [Mulesoft service bus](mulesoft/README.md)
+ * [Django backend](backend/README.md)
+ * [React frontend](frontend/README.md)
