@@ -9,7 +9,7 @@ services:
       - ./translate:/app
 
   mule:
-    build: mulesoft
+    image: wslph/mule:4.4.0-ee
     ports:
       - 8081:8081
     depends_on:
@@ -17,6 +17,8 @@ services:
     restart: always
     volumes:
       - ./mulesoft/apps:/opt/mule/apps
+      - ./mulesoft/compiled_mulesoft:/opt/mule/compiled_mulesoft
+      - ./mulesoft/logs:/opt/mule/am/logs
     environment:
       - MULE_ENV=dev
 

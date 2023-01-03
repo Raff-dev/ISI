@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="6e362b3b-1815-4248-aa44-2b2e8d32a9bf">
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="isiFlow" doc:id="5b9b2c2f-8f01-49e0-b318-3f636181f876" >
+		<http:listener doc:name="Listener" doc:id="9493cea2-9e4a-41d3-9dbe-564ed651c658" config-ref="HTTP_Listener_config" path="/getDrinkByIdInGivenLanguage"/>
+		<logger level="INFO" doc:name="Body" doc:id="64fba30f-e846-4334-a30f-9b5e18141db8" message='"Request data: " + #[payload]'/>
+		<set-variable value="#[payload.id]" doc:name="Set Variable" doc:id="953344dd-3a9e-4d07-9c28-ceef4190efe8" variableName="idOfDrink"/>
+		<set-variable value="#[payload.to_lang]" doc:name="Set Variable" doc:id="42a7f046-4b28-45d7-a2a2-0c9348ad297f" variableName="languageToTranslate"/>
+		<logger level="INFO" doc:name="Check Variables" doc:id="be747800-ee87-42d5-8897-d8761c8c2bb1" message='"Drink id: " + #[vars.idOfDrink] + " Lang: " + #[vars.languageToTranslate]' />
+		<logger level="INFO" doc:name="Log input" doc:id="27052bb3-6917-4546-ad45-2ae61c157bcd" message="#[payload]" />
+		<http:request method="GET" doc:name="CocktailRecipe" doc:id="b03dde33-96e1-4c04-9182-e15fd88cbb98" url="https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i={id}" followRedirects="true">
+			<http:uri-params><![CDATA[#[output application/java
+---
+{
+	"id" : vars.idOfDrink
+}]]]></http:uri-params>
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="565649d3-bfd6-4d1b-baef-fd2e15d2587c" />
+		<choice doc:name="Choice" doc:id="62fd601d-5493-4483-9139-238efee19c29" >
+			<when expression="#[payload.drinks != null]">
+				<set-variable value="#[payload]" doc:name="Set Variable" doc:id="57b0167f-7951-4047-80f7-a0148fd7eb40" variableName="OldPayload"/>
+				<logger level="INFO" doc:name="Logger" doc:id="24eeca03-7e83-4568-af0e-d8c76d7231c8" message='"When"'/>
+				<scatter-gather doc:name="Scatter-Gather" doc:id="aa7cb10a-c900-47f8-8979-2ece097dfa5e">
+			<route>
+				<ee:transform doc:name="Transform Message" doc:id="6ba41351-57cb-41a7-b290-87e18cf7d0ea">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	text: payload.drinks.strInstructions[0],
+	from_lang: "en",
+	to_lang: vars.languageToTranslate
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+						<http:request method="POST" doc:name="Translate" doc:id="46809d62-68b8-4360-9a73-118f8bbc867d" url="http://translate:8000/translate" followRedirects="true" sendBodyMode="ALWAYS">
+		</http:request>
+						<set-variable value="#[payload.text]" doc:name="Set Variable" doc:id="cf768ed3-59a9-470b-80fc-6ec1b31f9fe0" variableName="recipe" />
+			</route>
+			<route>
+						<choice doc:name="Choice" doc:id="c95bb4ff-f6df-4ffe-9bde-f009b65b3ae4">
+							<when expression="payload.drinks.strIngredient1[0] != null">
+								<set-variable value="#[payload.drinks.strMeasure1[0]]" doc:name="Set Variable" doc:id="49e85cbd-25de-4d5c-9f57-e3b1096cbb64" variableName="strMeasure1"/>
+								<ee:transform doc:name="Transform Message" doc:id="c1034582-f300-4b40-b34c-7bad956fb675">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	text: payload.drinks.strIngredient1[0],
+	from_lang: "en",
+	to_lang: vars.languageToTranslate
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+								<http:request method="POST" doc:name="Translate" doc:id="0b96d2cb-865a-4281-84f6-f2cc8bcb2a6c" url="http://translate:8000/translate" followRedirects="true" sendBodyMode="ALWAYS" />
+								<set-variable value="#[payload.text]" doc:name="Set Variable" doc:id="8ce81cbd-50b4-4278-b6b8-9ac23bac4d7f" variableName="strIngredient1" />
+							</when>
+							<otherwise >
+								<set-variable value="#[null]" doc:name="Set Variable" doc:id="4e1b9ae1-80dc-4bbd-8f86-2d63591c04de" variableName="strIngredient1" />
+								<set-variable value="#[null]" doc:name="Set Variable" doc:id="6ab9787c-5b3d-4831-b5e4-9d325fe6e0a5" variableName="strMeasure1" />
+							</otherwise>
+						
+</choice>
+			</route>	
+<route>
+						<choice doc:name="Choice" doc:id="66ec3d3e-518e-4935-b0d2-8db81de842b8">
+							<when expression="payload.drinks.strIngredient2[0] != null">
+								<set-variable value="#[payload.drinks.strMeasure2[0]]" doc:name="Set Variable" doc:id="cede4806-1a1b-4c2d-a2c2-09e13d9a55a1" variableName="strMeasure2"/>
+								<ee:transform doc:name="Transform Message" doc:id="c9435b68-e8a8-4116-b878-888af44da432">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	text: payload.drinks.strIngredient2[0],
+	from_lang: "en",
+	to_lang: vars.languageToTranslate
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+								<http:request method="POST" doc:name="Translate" doc:id="46eb6164-2b5a-4fa7-ac20-99d41f17c87e" url="http://translate:8000/translate" followRedirects="true" sendBodyMode="ALWAYS" />
+								<set-variable value="#[payload.text]" doc:name="Set Variable" doc:id="7a09da87-bf93-4bae-8ffc-71fa330a4f0c" variableName="strIngredient2" />
+							</when>
+							<otherwise >
+								<set-variable value="#[null]" doc:name="Set Variable" doc:id="54992a1a-9141-464b-b587-4ff0c81e2e8c" variableName="strIngredient2" />
+								<set-variable value="#[null]" doc:name="Set Variable" doc:id="e875a81c-ada8-4c11-af60-2dc2eff29469" variableName="strMeasure2" />
+							</otherwise>
+						
+</choice>
+			</route>	
+<route>
+						<choice doc:name="Choice" doc:id="cc034e4f-558c-4d3d-801b-ab4e85e2de19">
+							<when expression="payload.drinks.strIngredient3[0] != null">
+								<set-variable value="#[payload.drinks.strMeasure3[0]]" doc:name="Set Variable" doc:id="35b6234c-e5ac-4e15-bf88-7f56f46b1b7d" variableName="strMeasure3"/>
+								<ee:transform doc:name="Transform Message" doc:id="862a9f5f-c78a-4832-b66c-626234679fb1">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	text: payload.drinks.strIngredient3[0],
+	from_lang: "en",
+	to_lang: vars.languageToTranslate
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+								<http:request method="POST" doc:name="Translate" doc:id="fded6e9d-c900-421e-acc7-4925c8d7e724" url="http://translate:8000/translate" followRedirects="true" sendBodyMode="ALWAYS" />
+								<set-variable value="#[payload.text]" doc:name="Set Variable" doc:id="a6a73a15-be1d-4d96-b62c-43eb874218e8" variableName="strIngredient3" />
+							</when>
+							<otherwise >
+								<set-variable value="#[null]" doc:name="Set Variable" doc:id="7154fb97-3287-4ee3-97d0-1773873ac56d" variableName="strIngredient3" />
+								<set-variable value="#[null]" doc:name="Set Variable" doc:id="b0555d71-7091-4f46-b179-3555fc4f9513" variableName="strMeasure3" />
+							</otherwise>
+						
+</choice>
+			</route>	
+<route>
+						<choice doc:name="Choice" doc:id="f041ef3e-1f76-4806-947d-c12402325d80">
+							<when expression="payload.drinks.strIngredient4[0] != null">
+								<set-variable value="#[payload.drinks.strMeasure4[0]]" doc:name="Set Variable" doc:id="8fe36636-9162-47f4-9f66-3d98273192a7" variableName="strMeasure4"/>
+								<ee:transform doc:name="Transform Message" doc:id="bddd6f06-8f90-4a56-839d-29811707e906">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	text: payload.drinks.strIngredient4[0],
+	from_lang: "en",
+	to_lang: vars.languageToTranslate
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+								<http:request method="POST" doc:name="Translate" doc:id="218a6170-bca9-40b3-9cd5-e28202ce9b7b" url="http://translate:8000/translate" followRedirects="true" sendBodyMode="ALWAYS" />
+								<set-variable value="#[payload.text]" doc:name="Set Variable" doc:id="0b10ce44-b6cb-47c5-943d-68b84c09fe56" variableName="strIngredient4" />
+							</when>
+							<otherwise >
+								<set-variable value="#[null]" doc:name="Set Variable" doc:id="4e35ef2b-a536-45eb-9cb8-ba3298ef2a1b" variableName="strIngredient4" />
+								<set-variable value="#[null]" doc:name="Set Variable" doc:id="d139fbcc-aaf9-4cf0-9350-0413e0901baf" variableName="strMeasure4" />
+							</otherwise>
+						
+</choice>
+			</route>	
+<route>
+						<choice doc:name="Choice" doc:id="53e60597-3959-4d44-8ee7-458686b2a10e">
+							<when expression="payload.drinks.strIngredient5[0] != null">
+								<set-variable value="#[payload.drinks.strMeasure5[0]]" doc:name="Set Variable" doc:id="a8a13904-a3f3-449b-a846-77b7c131c799" variableName="strMeasure5"/>
+								<ee:transform doc:name="Transform Message" doc:id="b59dbeee-a601-45b3-8dd4-762b820ee838">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	text: payload.drinks.strIngredient5[0],
+	from_lang: "en",
+	to_lang: vars.languageToTranslate
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+								<http:request method="POST" doc:name="Translate" doc:id="53af7337-50ed-4bbf-98c1-1858e5c7d541" url="http://translate:8000/translate" followRedirects="true" sendBodyMode="ALWAYS" />
+								<set-variable value="#[payload.text]" doc:name="Set Variable" doc:id="07089ecf-1cd5-446c-b5a6-d97c4775555d" variableName="strIngredient5" />
+							</when>
+							<otherwise >
+								<set-variable value="#[null]" doc:name="Set Variable" doc:id="a7401062-ca17-4a05-b201-b0e6bb127e4d" variableName="strIngredient5" />
+								<set-variable value="#[null]" doc:name="Set Variable" doc:id="410dd43e-e557-4b6d-b540-914aa00e6b3d" variableName="strMeasure5" />
+							</otherwise>
+						
+</choice>
+			</route>	
+<route>
+						<choice doc:name="Choice" doc:id="7a631c30-f49b-4823-929f-e07e0b5cb436">
+							<when expression="payload.drinks.strIngredient6[0] != null">
+								<set-variable value="#[payload.drinks.strMeasure6[0]]" doc:name="Set Variable" doc:id="14277972-b207-4b07-9710-41740710e08b" variableName="strMeasure6"/>
+								<ee:transform doc:name="Transform Message" doc:id="47003903-e3ee-4536-b769-c992b83c6cc8">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	text: payload.drinks.strIngredient6[0],
+	from_lang: "en",
+	to_lang: vars.languageToTranslate
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+								<http:request method="POST" doc:name="Translate" doc:id="d307f487-c148-40d5-ab9c-8726c1b4ba3c" url="http://translate:8000/translate" followRedirects="true" sendBodyMode="ALWAYS" />
+								<set-variable value="#[payload.text]" doc:name="Set Variable" doc:id="d52e1ce7-d253-4efa-886d-e43c03b5c102" variableName="strIngredient6" />
+							</when>
+							<otherwise >
+								<set-variable value="#[null]" doc:name="Set Variable" doc:id="5fb2fd65-012f-48f1-a4e9-87da1457ec88" variableName="strIngredient6" />
+								<set-variable value="#[null]" doc:name="Set Variable" doc:id="eafc2afd-d5ec-4d7c-b7ec-e86b674074ee" variableName="strMeasure6" />
+							</otherwise>
+						
+</choice>
+			</route>	
+<route>
+						<choice doc:name="Choice1" doc:id="3ca7044c-8f9a-4b5a-8a26-f214aee531a1">
+							<when expression="payload.drinks.strIngredient7[0] != null">
+								<set-variable value="#[payload.drinks.strMeasure7[0]]" doc:name="Set Variable" doc:id="55d22714-c17c-4ea9-9ebf-f12b5cd278bc" variableName="strMeasure7"/>
+								<ee:transform doc:name="Transform Message" doc:id="9ab3b937-5056-4358-b8b0-34b5dd5ec009">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	text: payload.drinks.strIngredient7[0],
+	from_lang: "en",
+	to_lang: vars.languageToTranslate
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+								<http:request method="POST" doc:name="Translate" doc:id="5bd241c2-75a4-4af1-b7b6-af31db0394dd" url="http://translate:8000/translate" followRedirects="true" sendBodyMode="ALWAYS" />
+								<set-variable value="#[payload.text]" doc:name="Set Variable" doc:id="ecdb7af6-53a3-4e46-a174-fcb601ca2f7e" variableName="strIngredient7" />
+							</when>
+							<otherwise >
+								<set-variable value="#[null]" doc:name="Set Variable" doc:id="c520b645-d541-4a84-ab18-fbde647d3a53" variableName="strIngredient7" />
+								<set-variable value="#[null]" doc:name="Set Variable" doc:id="37568673-49fe-4309-b077-c9e7d237aac7" variableName="strMeasure7" />
+							</otherwise>
+						
+</choice>
+			</route>	
+<route>
+						<choice doc:name="Choice" doc:id="24a180cc-30a4-41b3-9985-077f259a90c6">
+							<when expression="payload.drinks.strIngredient8[0] != null">
+								<set-variable value="#[payload.drinks.strMeasure8[0]]" doc:name="Set Variable" doc:id="bb266738-789f-4df1-8e71-d10f66dabc82" variableName="strMeasure8"/>
+								<ee:transform doc:name="Transform Message" doc:id="78736cc9-e280-4ad1-a6b3-fc4a332159fa">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	text: payload.drinks.strIngredient8[0],
+	from_lang: "en",
+	to_lang: vars.languageToTranslate
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+								<http:request method="POST" doc:name="Translate" doc:id="4e8f6190-4fbc-4e87-9be0-05eceb837d2c" url="http://translate:8000/translate" followRedirects="true" sendBodyMode="ALWAYS" />
+								<set-variable value="#[payload.text]" doc:name="Set Variable" doc:id="f08e3b80-1b3d-4387-aec5-ff04fc08fe15" variableName="strIngredient8" />
+							</when>
+							<otherwise >
+								<set-variable value="#[null]" doc:name="Set Variable" doc:id="e6435e84-809e-4cba-874c-dca87d507619" variableName="strIngredient8" />
+								<set-variable value="#[null]" doc:name="Set Variable" doc:id="69fe14a7-73c8-40fa-8fd0-d3d39bb44999" variableName="strMeasure8" />
+							</otherwise>
+						
+</choice>
+			</route>	
+<route>
+						<choice doc:name="Choice" doc:id="46f762ad-6c09-44e3-b011-1dddfbb9cf4a">
+							<when expression="payload.drinks.strIngredient9[0] != null">
+								<set-variable value="#[payload.drinks.strMeasure9[0]]" doc:name="Set Variable" doc:id="d3ce8d0d-f3e2-41f8-bd9d-b9d15b3413fa" variableName="strMeasure9"/>
+								<ee:transform doc:name="Transform Message" doc:id="e23d90a7-03eb-4a13-a2d9-1e171894abf7">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	text: payload.drinks.strIngredient9[0],
+	from_lang: "en",
+	to_lang: vars.languageToTranslate
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+								<http:request method="POST" doc:name="Translate" doc:id="591da4ab-1520-4c32-95dc-a8e706a2885e" url="http://translate:8000/translate" followRedirects="true" sendBodyMode="ALWAYS" />
+								<set-variable value="#[payload.text]" doc:name="Set Variable" doc:id="8680c615-0b72-43f4-8b2a-0b033171abd0" variableName="strIngredient9" />
+							</when>
+							<otherwise >
+								<set-variable value="#[null]" doc:name="Set Variable" doc:id="087d79dc-b48c-46df-9212-f0e00cc0659c" variableName="strIngredient9" />
+								<set-variable value="#[null]" doc:name="Set Variable" doc:id="aedaad8a-016c-4f5e-b2c7-c59d8850603c" variableName="strMeasure9" />
+							</otherwise>
+						
+</choice>
+			</route>	
+<route>
+						<choice doc:name="Choice" doc:id="416e89d1-f4e0-42e5-8d69-e435c64e95e7">
+							<when expression="payload.drinks.strIngredient10[0] != null">
+								<set-variable value="#[payload.drinks.strMeasure10[0]]" doc:name="Set Variable" doc:id="498e6162-3129-4204-a7b2-ace9978936ea" variableName="strMeasure10"/>
+								<ee:transform doc:name="Transform Message" doc:id="05665b72-ab1a-4aa3-a38d-f01bbe76e69d">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	text: payload.drinks.strIngredient10[0],
+	from_lang: "en",
+	to_lang: vars.languageToTranslate
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+								<http:request method="POST" doc:name="Translate" doc:id="93e8c8af-fedd-4b2f-a4a0-29d829c3b9b3" url="http://translate:8000/translate" followRedirects="true" sendBodyMode="ALWAYS" />
+								<set-variable value="#[payload.text]" doc:name="Set Variable" doc:id="5f3e1939-ce97-4e6c-a3f7-9d7f38531c96" variableName="strIngredient10" />
+							</when>
+							<otherwise >
+								<set-variable value="#[null]" doc:name="Set Variable" doc:id="89411538-1205-4d2b-8e5f-d78c2038728b" variableName="strIngredient10" />
+								<set-variable value="#[null]" doc:name="Set Variable" doc:id="8d429bcd-14f8-4f74-99d2-f133f20e9063" variableName="strMeasure10" />
+							</otherwise>
+						
+</choice>
+			</route>	
+<route>
+						<choice doc:name="Choice" doc:id="bcebe774-0641-4e84-b626-1e5dbd9e42c2">
+							<when expression="payload.drinks.strIngredient11[0] != null">
+								<set-variable value="#[payload.drinks.strMeasure11[0]]" doc:name="Set Variable" doc:id="b3fa9246-de3c-4e1f-ab0c-685c14aa5784" variableName="strMeasure11"/>
+								<ee:transform doc:name="Transform Message" doc:id="ea5bdba6-6f37-4a56-9f27-ba4a40d77e75">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	text: payload.drinks.strIngredient11[0],
+	from_lang: "en",
+	to_lang: vars.languageToTranslate
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+								<http:request method="POST" doc:name="Translate" doc:id="b2fb9daf-9ede-4c4a-8b8b-d9e65720cd26" url="http://translate:8000/translate" followRedirects="true" sendBodyMode="ALWAYS" />
+								<set-variable value="#[payload.text]" doc:name="Set Variable" doc:id="ba35549a-79fe-47e0-add2-d60cbe33fe28" variableName="strIngredient11" />
+							</when>
+							<otherwise >
+								<set-variable value="#[null]" doc:name="Set Variable" doc:id="640b4cad-8b85-4183-8213-b091c062917c" variableName="strIngredient11" />
+								<set-variable value="#[null]" doc:name="Set Variable" doc:id="406991c4-34c3-4e4e-8c98-e8e2cca54979" variableName="strMeasure11" />
+							</otherwise>
+						
+</choice>
+			</route>	<route>
+						<choice doc:name="Choice" doc:id="763bb00b-8bea-4abe-afab-57b44e908e99">
+							<when expression="payload.drinks.strIngredient12[0] != null">
+								<set-variable value="#[payload.drinks.strMeasure12[0]]" doc:name="Set Variable" doc:id="baabf085-e9d7-4ffc-9b14-3af1e034977c" variableName="strMeasure12"/>
+								<ee:transform doc:name="Transform Message" doc:id="1cb7d3b4-5976-44c6-9c1c-9ad845b462ba">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	text: payload.drinks.strIngredient12[0],
+	from_lang: "en",
+	to_lang: vars.languageToTranslate
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+								<http:request method="POST" doc:name="Translate" doc:id="8a3d2251-386f-461c-8fa4-09057153bdf9" url="http://translate:8000/translate" followRedirects="true" sendBodyMode="ALWAYS" />
+								<set-variable value="#[payload.text]" doc:name="Set Variable" doc:id="96d42647-bb18-44ab-9ffe-bcc50b9bff68" variableName="strIngredient12" />
+							</when>
+							<otherwise >
+								<set-variable value="#[null]" doc:name="Set Variable" doc:id="8341a56f-b0d9-41da-93b2-a88d8689cf61" variableName="strIngredient12" />
+								<set-variable value="#[null]" doc:name="Set Variable" doc:id="3ec075a1-5c53-4204-96dd-cb3a65560650" variableName="strMeasure12" />
+							</otherwise>
+						
+</choice>
+			</route>	
+<route>
+						<choice doc:name="Choice" doc:id="a10dcf26-fd47-4fd9-bdc4-f7688facbf4d">
+							<when expression="payload.drinks.strIngredient13[0] != null">
+								<set-variable value="#[payload.drinks.strMeasure13[0]]" doc:name="Set Variable" doc:id="580f53cf-1abf-4aae-b5f6-c06490943aaf" variableName="strMeasure13"/>
+								<ee:transform doc:name="Transform Message" doc:id="f997a29d-c4d4-421e-a53b-f07d9d238e59">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	text: payload.drinks.strIngredient13[0],
+	from_lang: "en",
+	to_lang: vars.languageToTranslate
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+								<http:request method="POST" doc:name="Translate" doc:id="2a8079ca-a652-4a7c-83fa-77434306fa33" url="http://translate:8000/translate" followRedirects="true" sendBodyMode="ALWAYS" />
+								<set-variable value="#[payload.text]" doc:name="Set Variable" doc:id="2e5c9499-06d4-46f9-b1a1-271f5c3f8e4f" variableName="strIngredient13" />
+							</when>
+							<otherwise >
+								<set-variable value="#[null]" doc:name="Set Variable" doc:id="587ab2e4-6663-4fa4-a276-3003a2ca9c43" variableName="strIngredient13" />
+								<set-variable value="#[null]" doc:name="Set Variable" doc:id="e9824065-d7f3-41a0-95fe-545251f66434" variableName="strMeasure13" />
+							</otherwise>
+						
+</choice>
+			</route>	
+<route>
+						<choice doc:name="Choice" doc:id="0209fa5b-c20b-4647-93cd-276f4a6cda8b">
+							<when expression="payload.drinks.strIngredient14[0] != null">
+								<set-variable value="#[payload.drinks.strMeasure14[0]]" doc:name="Set Variable" doc:id="7367bdb5-db34-4403-b972-3e27ddc4bd15" variableName="strMeasure14"/>
+								<ee:transform doc:name="Transform Message" doc:id="002364bb-207c-4923-9163-6c04c8f0f736">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	text: payload.drinks.strIngredient14[0],
+	from_lang: "en",
+	to_lang: vars.languageToTranslate
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+								<http:request method="POST" doc:name="Translate" doc:id="30628d04-01af-4832-8d11-77385723988a" url="http://translate:8000/translate" followRedirects="true" sendBodyMode="ALWAYS" />
+								<set-variable value="#[payload.text]" doc:name="Set Variable" doc:id="f9aec0e4-29a8-4aca-9cf5-d8766c4efc90" variableName="strIngredient14" />
+							</when>
+							<otherwise >
+								<set-variable value="#[null]" doc:name="Set Variable" doc:id="27762aec-c72f-4b74-b631-6a2c52bdca03" variableName="strIngredient14" />
+								<set-variable value="#[null]" doc:name="Set Variable" doc:id="4d95ecba-8c23-4a9e-bf7b-26e82cf334e4" variableName="strMeasure14" />
+							</otherwise>
+						
+</choice>
+			</route>	
+<route>
+						<choice doc:name="Choice" doc:id="f42722b0-633c-4522-bc19-6bc29bcd4083">
+							<when expression="payload.drinks.strIngredient15[0] != null">
+								<set-variable value="#[payload.drinks.strMeasure15[0]]" doc:name="Set Variable" doc:id="3252dd64-f932-48f1-86d8-80698646a93b" variableName="strMeasure15"/>
+								<ee:transform doc:name="Transform Message" doc:id="c38cf015-9a59-4d72-b712-04628ffbcbcb">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	text: payload.drinks.strIngredient15[0],
+	from_lang: "en",
+	to_lang: vars.languageToTranslate
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+							<http:request method="POST" doc:name="Translate" doc:id="9139af40-eff9-49db-8616-f6472f825c65" url="http://translate:8000/translate" followRedirects="true" sendBodyMode="ALWAYS" />
+								<set-variable value="#[payload.text]" doc:name="Set Variable" doc:id="c185e550-0217-4abc-a37f-24df753bbf79" variableName="strIngredient15" />
+							</when>
+							<otherwise >
+								<set-variable value="#[null]" doc:name="Set Variable" doc:id="7bfef53e-3972-44d2-89fa-58eb1d133808" variableName="strIngredient15" />
+								<set-variable value="#[null]" doc:name="Set Variable" doc:id="db001407-c7a2-40f4-a8f6-ecadf8ed2a35" variableName="strMeasure15" />
+							</otherwise>
+						
+</choice>
+			</route>						
+		</scatter-gather>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="ab34079b-4152-4d07-b23f-b0292e99b59e" message='"DEFAULT"'/>
+			</otherwise>
+		</choice>
+		<ee:transform doc:name="Transform Message" doc:id="62e7a0d6-71f3-4d89-9b0c-a448102af799" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	drinks: vars.OldPayload.drinks map ( drink , indexOfDrink ) -> {
+		idDrink: drink.idDrink,
+		strDrink: drink.strDrink,
+		strDrinkAlternate: drink.strDrinkAlternate,
+		strTags: drink.strTags,
+		strVideo: drink.strVideo,
+		strCategory: drink.strCategory,
+		strIBA: drink.strIBA,
+		strAlcoholic: drink.strAlcoholic,
+		strGlass: drink.strGlass,
+		strInstructions: vars.recipe,
+		strInstructionsES: drink.strInstructionsES,
+		strInstructionsDE: drink.strInstructionsDE,
+		strInstructionsFR: drink.strInstructionsFR,
+		strInstructionsIT: drink.strInstructionsIT,
+		"strInstructionsZH-HANS": drink."strInstructionsZH-HANS",
+		"strInstructionsZH-HANT": drink."strInstructionsZH-HANT",
+		strDrinkThumb: drink.strDrinkThumb,
+		strIngredient1: vars.strIngredient1,
+		strIngredient2: vars.strIngredient2,
+		strIngredient3: vars.strIngredient3,
+		strIngredient4: vars.strIngredient4,
+		strIngredient5: vars.strIngredient5,
+		strIngredient6: vars.strIngredient6,
+		strIngredient7: vars.strIngredient7,
+		strIngredient8: vars.strIngredient8,
+		strIngredient9: vars.strIngredient9,
+		strIngredient10: vars.strIngredient10,
+		strIngredient11: vars.strIngredient11,
+		strIngredient12: vars.strIngredient12,
+		strIngredient13: drink.strIngredient13,
+		strIngredient14: vars.strIngredient14,
+		strIngredient15: vars.strIngredient15,
+		strMeasure1: vars.strMeasure1,
+		strMeasure2: vars.strMeasure2,
+		strMeasure3: vars.strMeasure3,
+		strMeasure4: vars.strMeasure4,
+		strMeasure5: vars.strMeasure5,
+		strMeasure6: vars.strMeasure6,
+		strMeasure7: vars.strMeasure7,
+		strMeasure8: vars.strMeasure8,
+		strMeasure9: vars.strMeasure9,
+		strMeasure10: vars.strMeasure10,
+		strMeasure11: vars.strMeasure11,
+		strMeasure12: vars.strMeasure12,
+		strMeasure13: vars.strMeasure13,
+		strMeasure14: vars.strMeasure14,
+		strMeasure15: vars.strMeasure15,
+		strImageSource: drink.strImageSource,
+		strImageAttribution: drink.strImageAttribution,
+		strCreativeCommonsConfirmed: drink.strCreativeCommonsConfirmed,
+		dateModified: drink.dateModified
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="bab9a771-f311-4f0a-9d31-c77504d59a07" message="#[payload]"/>
+	</flow>
+</mule>

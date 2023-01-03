@@ -1,0 +1,29 @@
+{
+  "configs": [
+    "isi.xml"
+  ],
+  "secureProperties": [],
+  "redeploymentEnabled": true,
+  "name": "com.mycompany:isi:1.0.0-SNAPSHOT",
+  "minMuleVersion": "4.4.0",
+  "requiredProduct": "MULE_EE",
+  "classLoaderModelLoaderDescriptor": {
+    "id": "mule",
+    "attributes": {
+      "exportedPackages": [],
+      "exportedResources": [
+        "application-types.xml",
+        "examples/apiTranslatorSchemaExample.json",
+        "examples/drinkDataResponse.json",
+        "examples/getDrinkByIdInGivenLanguage.json",
+        "examples/outputFromTranslatorExample.json",
+        "isi.xml",
+        "log4j2.xml"
+      ]
+    }
+  },
+  "bundleDescriptorLoader": {
+    "id": "mule",
+    "attributes": {}
+  }
+}
