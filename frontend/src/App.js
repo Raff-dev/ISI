@@ -9,24 +9,18 @@ const StyledDiv = styled.div`
     margin-top: 10%;
 `;
 
-const StyledButton = styled(Button)`
-    font-family: "Inter var, roboto, sans-serif";
-    margin-top: 10px;
-`;
-
 const FullscreenDiv = styled.div`
     position: absolute;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: rgb(30, 41, 59);
-    color: rgb(208, 212, 252);
-    font-family: "Inter";
+    background-color: rgb(30, 30, 80);
 `;
 
 const StyledMenu = styled(Menu)`
-    font-family: "Inter var, roboto, sans-serif";
+    font-weight: 500;
+    font-size: 2rem;
 `;
 
 const App = () => {
@@ -50,12 +44,13 @@ const App = () => {
             <StyledDiv>
                 <Input size="huge" placeholder="Enter Recipe Name" onChange={(e) => setInput(e.target.value)} />
                 <br />
-                <StyledButton size="huge" color="violet" onClick={sendInputToCamunda}>
-                    Get Recipe
-                </StyledButton>
+                <Button size="huge" color="violet" onClick={sendInputToCamunda}>
+                    GET RECIPE
+                </Button>
             </StyledDiv>
         </FullscreenDiv>
     );
 };
 
 export default App;
+
