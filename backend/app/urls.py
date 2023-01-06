@@ -7,7 +7,7 @@ urlpatterns = [
 ]
 
 local_patterns = [
-    path(app_name + "/", include(app_name + ".urls"))
+    path("", include(app_name + ".urls"))
     for app_name in settings.LOCAL_APPS
 ]
 

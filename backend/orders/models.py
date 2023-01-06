@@ -1,3 +1,6 @@
 from django.db import models
 
-# Create your models here.
+
+class OrderLog(models.Model):
+    drink_id = models.IntegerField()
+    order_count = models.IntegerField()

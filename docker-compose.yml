@@ -44,7 +44,6 @@ services:
       - DEBUG=True
       - DJANGO_SETTINGS_MODULE=app.settings1
 
-
   django2:
     build: backend
     ports:

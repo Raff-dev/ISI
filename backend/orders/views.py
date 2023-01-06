@@ -1,3 +1,8 @@
-from django.shortcuts import render
+from orders.models import OrderLog
+from orders.serializers import OrderLogSerializer
+from rest_framework import viewsets
 
-# Create your views here.
+
+class OrderLogViewSet(viewsets.ModelViewSet):
+    queryset = OrderLog.objects.all()
+    serializer_class = OrderLogSerializer
