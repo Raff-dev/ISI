@@ -12,10 +12,7 @@ In order to run the stack locally, you're going to need [Docker](https://docs.do
 Here's how to get you started:
 
 ```bash
-# copy django .env file from example
-cp backend/.env.example backend/.env
-
-# run the docker services
+# run the docker services in background
 docker compose up -d
 ```
 

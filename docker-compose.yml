@@ -27,17 +27,32 @@ services:
     ports:
       - 3000:3000
     depends_on:
-      - django
+      - django1
     restart: always
     volumes:
       - ./frontend:/app
 
-  django:
+  django1:
     build: backend
     ports:
-      - 8001:8001
+      - 8001:8000
     restart: always
     volumes:
       - ./backend:/app
-    env_file:
-      - ./backend/.env
+    environment:
+      - DJANGO_SECRET_KEY=very_secret_key
+      - DEBUG=True
+      - DJANGO_SETTINGS_MODULE=app.settings1
+
+
+  django2:
+    build: backend
+    ports:
+      - 8002:8000
+    restart: always
+    volumes:
+      - ./backend:/app
+    environment:
+      - DJANGO_SECRET_KEY=very_secret_key
+      - DEBUG=True
+      - DJANGO_SETTINGS_MODULE=app.settings2
