@@ -1,5 +1,5 @@
 from django.contrib import admin
-from drinks.models import DrinkRequest
+from drinks.models import DrinkEnquiry
 
 # Register your models here.
-admin.site.register(DrinkRequest)
+admin.site.register(DrinkEnquiry)
