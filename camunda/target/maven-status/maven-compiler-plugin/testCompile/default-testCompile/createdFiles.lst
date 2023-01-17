@@ -1,0 +1,4 @@
+org/example/ProcessScenarioTest.class
+org/example/ProcessUnitTest.class
+org/example/ProcessTestCoverageProcessEnginePlugin.class
+org/example/InMemoryH2Test.class

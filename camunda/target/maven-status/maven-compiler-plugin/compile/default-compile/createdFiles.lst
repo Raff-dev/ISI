@@ -1,0 +1,6 @@
+org/example/GetDrinkClient.class
+org/example/GetDrinkFromList.class
+org/example/ProcessConstants.class
+org/example/LoggerDelegate.class
+org/example/CamundaApplication.class
+org/example/GetNoDrinkClient.class

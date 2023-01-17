@@ -55,3 +55,13 @@ services:
       - DJANGO_SECRET_KEY=very_secret_key
       - DEBUG=True
       - DJANGO_SETTINGS_MODULE=app.settings2
+
+  camunda:
+    image: maven:latest
+    ports:
+      - 8080:8080
+    working_dir: /app
+    volumes:
+      - ./camunda:/app
+    # command: mvn clean package spring-boot:run # for development
+    command: java -jar target/partyOrganizer.jar
