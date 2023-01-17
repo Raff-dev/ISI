@@ -1,7 +1,7 @@
 #!/bin/sh
 
 echo "Updating dependencies"
-poetry install --only main
+poetry install --only main --no-update
 
 echo "Applying migrations"
 python manage.py migrate

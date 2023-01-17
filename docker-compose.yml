@@ -58,9 +58,9 @@ services:
       - DJANGO_SECRET_KEY=very_secret_key
       - DEBUG=True
       - DJANGO_SETTINGS_MODULE=app.settings1
-      - POSTGRES_DB=django1
-      - POSTGRES_USER=django1
-      - POSTGRES_PASSWORD=django1
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
       - POSTGRES_HOST=postgres1
       - POSTGRES_PORT=5432
 
@@ -79,24 +79,24 @@ services:
       - DJANGO_SECRET_KEY=very_secret_key
       - DEBUG=True
       - DJANGO_SETTINGS_MODULE=app.settings2
-      - POSTGRES_DB=django2
-      - POSTGRES_USER=django2
-      - POSTGRES_PASSWORD=django2
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
       - POSTGRES_HOST=postgres2
       - POSTGRES_PORT=5432
 
   postgres1:
     image: postgres:13
     volumes:
-      - "database:/var/lib/postgresql/data"
+      - postgres1:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: django1
-      POSTGRES_USER: django1
-      POSTGRES_PASSWORD: django1
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     ports:
       - 5432:5432
     healthcheck:
-      test: pg_isready -q -U django1 -d django1 || exit 1
+      test: pg_isready -q -U postgres -d postgres || exit 1
       interval: 3s
       timeout: 3s
       retries: 10
@@ -104,18 +104,19 @@ services:
   postgres2:
     image: postgres:13
     volumes:
-      - database:/var/lib/postgresql/data
+      - postgres2:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: django2
-      POSTGRES_USER: django2
-      POSTGRES_PASSWORD: django2
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     ports:
       - 5433:5432
     healthcheck:
-      test: pg_isready -q -U django2 -d django1 || exit 1
+      test: pg_isready -q -U postgres -d postgres || exit 1
       interval: 3s
       timeout: 3s
       retries: 10
 
 volumes:
-  database: {}
+  postgres1: {}
+  postgres2: {}
