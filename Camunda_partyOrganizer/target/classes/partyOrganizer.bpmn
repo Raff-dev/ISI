@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0os29s1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.7.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.18.0">
+  <bpmn:process id="Process_0j3mwpk" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_1sch7xa</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_1sch7xa" sourceRef="StartEvent_1" targetRef="Activity_11ypftu" />
+    <bpmn:serviceTask id="Activity_11ypftu" name="Get Drink" camunda:class="org.example.GetDrinkClient">
+      <bpmn:incoming>Flow_1sch7xa</bpmn:incoming>
+      <bpmn:outgoing>Flow_11ukrzb</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_1ltntzq" default="Flow_0hnlv5s">
+      <bpmn:incoming>Flow_11ukrzb</bpmn:incoming>
+      <bpmn:outgoing>Flow_0hnlv5s</bpmn:outgoing>
+      <bpmn:outgoing>Flow_074wo1j</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_11ukrzb" sourceRef="Activity_11ypftu" targetRef="Gateway_1ltntzq" />
+    <bpmn:sequenceFlow id="Flow_0hnlv5s" name="hour &#60; 12" sourceRef="Gateway_1ltntzq" targetRef="Activity_08hq1ki" />
+    <bpmn:sequenceFlow id="Flow_074wo1j" name="hour &#62;= 12" sourceRef="Gateway_1ltntzq" targetRef="Activity_09jtwhv">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${hour &gt;= 12}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:endEvent id="Event_0vz1ufg">
+      <bpmn:incoming>Flow_1vi1s8s</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0cslb5j" sourceRef="Activity_08hq1ki" targetRef="Event_0u05uk8" />
+    <bpmn:sequenceFlow id="Flow_1vi1s8s" sourceRef="Activity_09jtwhv" targetRef="Event_0vz1ufg" />
+    <bpmn:serviceTask id="Activity_08hq1ki" name="Return Null since gentelmens don&#39;t drink" camunda:class="org.example.GetNoDrinkClient">
+      <bpmn:incoming>Flow_0hnlv5s</bpmn:incoming>
+      <bpmn:outgoing>Flow_0cslb5j</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="Event_0u05uk8">
+      <bpmn:incoming>Flow_0cslb5j</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="Activity_09jtwhv" name="Get Drink Recipe" camunda:class="org.example.GetDrinkFromList">
+      <bpmn:incoming>Flow_074wo1j</bpmn:incoming>
+      <bpmn:outgoing>Flow_1vi1s8s</bpmn:outgoing>
+    </bpmn:serviceTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_0j3mwpk">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="209" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_05heebj_di" bpmnElement="Activity_11ypftu">
+        <dc:Bounds x="290" y="187" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1ltntzq_di" bpmnElement="Gateway_1ltntzq" isMarkerVisible="true">
+        <dc:Bounds x="465" y="202" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0u05uk8_di" bpmnElement="Event_0u05uk8">
+        <dc:Bounds x="812" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0vz1ufg_di" bpmnElement="Event_0vz1ufg">
+        <dc:Bounds x="812" y="312" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0qcu8qo_di" bpmnElement="Activity_08hq1ki">
+        <dc:Bounds x="630" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0o8r29o_di" bpmnElement="Activity_09jtwhv">
+        <dc:Bounds x="630" y="290" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1sch7xa_di" bpmnElement="Flow_1sch7xa">
+        <di:waypoint x="215" y="227" />
+        <di:waypoint x="290" y="227" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_11ukrzb_di" bpmnElement="Flow_11ukrzb">
+        <di:waypoint x="390" y="227" />
+        <di:waypoint x="465" y="227" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0hnlv5s_di" bpmnElement="Flow_0hnlv5s">
+        <di:waypoint x="490" y="202" />
+        <di:waypoint x="490" y="120" />
+        <di:waypoint x="630" y="120" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="506" y="158" width="47" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_074wo1j_di" bpmnElement="Flow_074wo1j">
+        <di:waypoint x="490" y="252" />
+        <di:waypoint x="490" y="330" />
+        <di:waypoint x="630" y="330" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="513" y="288" width="54" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0cslb5j_di" bpmnElement="Flow_0cslb5j">
+        <di:waypoint x="730" y="120" />
+        <di:waypoint x="812" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1vi1s8s_di" bpmnElement="Flow_1vi1s8s">
+        <di:waypoint x="730" y="330" />
+        <di:waypoint x="812" y="330" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
