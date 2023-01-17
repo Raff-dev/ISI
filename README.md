@@ -5,6 +5,7 @@
 
 In order to run the stack locally, you're going to need [Docker](https://docs.docker.com/engine/install/ubuntu/) along with the Docker Compose plugin.
 
+
 ---
 
 ## Running the stack
