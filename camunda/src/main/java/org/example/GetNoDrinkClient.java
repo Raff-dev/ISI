@@ -20,9 +20,13 @@ public class GetNoDrinkClient implements JavaDelegate{
         HttpHeaders headersForApp = new HttpHeaders();
         headersForApp.setContentType(MediaType.APPLICATION_JSON);
         JSONObject jsonForApp = new JSONObject();
+        String username = (String) execution.getVariable("username");
+        jsonForApp.put("username", username);
+        jsonForApp.put("drink_id", -1);
+        jsonForApp.put("to_lang", "pl");
         jsonForApp.put("drinks", "Gentelmeni nie piją przed 12");
-        HttpEntity<String> entity = new HttpEntity<String>("", headersForApp);
-        LOGGER.info(jsonForMule.toJSONString());
-        ResponseEntity<String> responseFromApp = restTemplate.exchange("localhost:8001/enquiry", HttpMethod.POST, entity, String.class, headersForApp);
+        HttpEntity<String> entity = new HttpEntity<String>(jsonForApp.toJSONString(), headersForApp);
+        LOGGER.info(jsonForApp.toJSONString());
+        ResponseEntity<String> responseFromApp = restTemplateForApp.exchange("localhost:8001/enquiry", HttpMethod.POST, entity, String.class, headersForApp);
     }
 }

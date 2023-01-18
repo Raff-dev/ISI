@@ -1,4 +1,5 @@
 package org.example;
+import jdk.nashorn.internal.parser.JSONParser;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.http.*;
@@ -37,19 +38,19 @@ public class GetDrinkFromList implements JavaDelegate{
 
         String responseBody = response.getBody();
         LOGGER.info("order drink result" + responseBody);
-        JSONObject jsonResponse = new JSONObject(responseBody);
+
         JSONObject jsonToResponse = new JSONObject();
 
         jsonToResponse.put("username", username);
         jsonToResponse.put("drink_id", 11000+n);
         jsonToResponse.put("to_lang", to_lang);
-        jsonToResponse.put("data", jsonResponse);
+        jsonToResponse.put("data", responseBody);
         LOGGER.info(jsonToResponse.toJSONString());
         RestTemplate restTemplateForApp = new RestTemplate();
         HttpHeaders headersForApp = new HttpHeaders();
         headersForApp.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<String> entity = new HttpEntity<String>(responseBody, headersForApp);
-        ResponseEntity<String> responseFromApp = restTemplate.exchange("localhost:8001/enquiry", HttpMethod.POST, entity, String.class, headersForApp);
+        HttpEntity<String> entityToApp = new HttpEntity<String>(responseBody, headersForApp);
+        ResponseEntity<String> responseFromApp = restTemplate.exchange("localhost:8001/enquiry", HttpMethod.POST, entityToApp, String.class, headersForApp);
     }
 }
