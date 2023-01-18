@@ -16,6 +16,13 @@ import java.util.logging.Logger;
 public class GetNoDrinkClient implements JavaDelegate{
     private final Logger LOGGER = Logger.getLogger(LoggerDelegate.class.getName());
     public void execute(DelegateExecution execution) throws IOException{
-
+        RestTemplate restTemplateForApp = new RestTemplate();
+        HttpHeaders headersForApp = new HttpHeaders();
+        headersForApp.setContentType(MediaType.APPLICATION_JSON);
+        JSONObject jsonForApp = new JSONObject();
+        jsonForApp.put("drinks", "Gentelmeni nie piją przed 12");
+        HttpEntity<String> entity = new HttpEntity<String>("", headersForApp);
+        LOGGER.info(jsonForMule.toJSONString());
+        ResponseEntity<String> responseFromApp = restTemplate.exchange("localhost:8001/enquiry", HttpMethod.POST, entity, String.class, headersForApp);
     }
 }

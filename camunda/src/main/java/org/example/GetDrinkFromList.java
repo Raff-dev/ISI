@@ -19,6 +19,7 @@ public class GetDrinkFromList implements JavaDelegate{
         LOGGER.info("started GetDrinkFromList");
         Random rand = new Random();
         String to_lang = (String) execution.getVariable("desired_language");
+        String username = (String) execution.getVariable("username");
         int n = rand.nextInt(10);
         //String URL = "https://eee414bf-303a-4f20-b48e-66b0bf3c0731.mock.pstmn.io/getDrinkByIdInGivenLanguage";
         String URL = "http://mule:8081/getDrinkByIdInGivenLanguage";
@@ -36,5 +37,19 @@ public class GetDrinkFromList implements JavaDelegate{
 
         String responseBody = response.getBody();
         LOGGER.info("order drink result" + responseBody);
+        JSONObject jsonResponse = new JSONObject(responseBody);
+        JSONObject jsonToResponse = new JSONObject();
+
+        jsonToResponse.put("username", username);
+        jsonToResponse.put("drink_id", 11000+n);
+        jsonToResponse.put("to_lang", to_lang);
+        jsonToResponse.put("data", jsonResponse);
+        LOGGER.info(jsonToResponse.toJSONString());
+        RestTemplate restTemplateForApp = new RestTemplate();
+        HttpHeaders headersForApp = new HttpHeaders();
+        headersForApp.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<String> entity = new HttpEntity<String>(responseBody, headersForApp);
+        ResponseEntity<String> responseFromApp = restTemplate.exchange("localhost:8001/enquiry", HttpMethod.POST, entity, String.class, headersForApp);
     }
 }

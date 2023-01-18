@@ -14,10 +14,12 @@ public class GetDrinkClient implements JavaDelegate{
         LOGGER.info("started DrinkClient");
         String hour = (String) execution.getVariable("hour");
         String desired_language = (String) execution.getVariable("desired_language");
+        String username = (String) execution.getVariable("username");
         LOGGER.info(hour);
         LOGGER.info(desired_language);
         execution.setVariable("hour", Integer.parseInt(hour));
         execution.setVariable("desired_language", desired_language);
+        execution.setVariable("username", username);
         LOGGER.info(String.valueOf(hour));
     }
 }
