@@ -48,13 +48,7 @@ public class GetDrinkFromList implements JavaDelegate{
         headersForApp.setContentType(MediaType.APPLICATION_JSON);
 
         HttpEntity<String> entityToApp = new HttpEntity<String>(jsonToResponse.toJSONString(), headersForApp);
-        ResponseEntity<String> responseFromApp;
-        try {
-            responseFromApp = restTemplate.exchange("http://django1:8001/enquiry/", HttpMethod.POST, entityToApp, String.class, headersForApp);
-        }
-        catch(Exception e) {
-            //  Block of code to handle errors
-        }
+        ResponseEntity<String> responseFromApp = restTemplate.exchange("https://8d94d99a-1356-4771-8595-08a65e6161c0.mock.pstmn.io/enquiry/", HttpMethod.POST, entityToApp, String.class, headersForApp);
         LOGGER.info("Django response " + responseFromApp);
     }
 }
