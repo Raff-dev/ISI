@@ -1,4 +1,4 @@
-# ISI
+# [ISI](../README.md) Translation service
 
 A simple app that uses the Google Translate API to translate text from any language to another.
 

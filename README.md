@@ -23,7 +23,8 @@ docker compose up -d
 
 Have a look at specific services' READMEs here 🤓:
 
- * [FastAPI translation service](translate/README.md)
- * [Mulesoft service bus](mulesoft/README.md)
  * [Django backend](backend/README.md)
+ * [Camunda](camunda/README.md)
  * [React frontend](frontend/README.md)
+ * [Mulesoft service bus](mulesoft/README.md)
+ * [FastAPI translation service](translate/README.md)
