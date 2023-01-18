@@ -1,11 +1,8 @@
 package org.example;
-import jdk.nashorn.internal.parser.JSONParser;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
-import spinjar.com.fasterxml.jackson.databind.JsonNode;
-import spinjar.com.fasterxml.jackson.databind.ObjectMapper;
 import spinjar.com.minidev.json.JSONObject;
 
 import java.io.IOException;
