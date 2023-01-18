@@ -5,6 +5,13 @@ x-postgres-creds:
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: postgres
 
+x-django-env:
+  &django-env
+  <<: *postgres-creds
+  DJANGO_SECRET_KEY: very_secret_key
+  DEBUG: True
+  POSTGRES_PORT: 5432
+
 services:
   translate:
     build: translate
@@ -46,8 +53,8 @@ services:
     working_dir: /app
     volumes:
       - ./camunda:/app
-    # command: mvn clean package spring-boot:run # for development
-    command: java -jar target/partyOrganizer.jar
+    command: mvn clean package spring-boot:run # for development
+    # command: java -jar target/partyOrganizer.jar
 
   django1:
     build: backend
@@ -60,12 +67,9 @@ services:
       postgres1:
         condition: service_healthy
     environment:
-      DJANGO_SECRET_KEY: very_secret_key
-      DEBUG: True
+      <<: *django-env
       DJANGO_SETTINGS_MODULE: app.settings1
       POSTGRES_HOST: postgres1
-      POSTGRES_PORT: 5432
-      <<: *postgres-creds
 
   django2:
     build: backend
@@ -79,12 +83,9 @@ services:
         condition: service_healthy
 
     environment:
-      DJANGO_SECRET_KEY: very_secret_key
-      DEBUG: True
+      <<: *django-env
       DJANGO_SETTINGS_MODULE: app.settings2
       POSTGRES_HOST: postgres2
-      POSTGRES_PORT: 5432
-      <<: *postgres-creds
 
   postgres1:
     image: postgres:13

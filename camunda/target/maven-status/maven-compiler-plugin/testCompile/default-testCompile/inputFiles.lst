@@ -1,4 +1,4 @@
-/camunda/src/test/java/org/example/InMemoryH2Test.java
-/camunda/src/test/java/org/example/ProcessTestCoverageProcessEnginePlugin.java
-/camunda/src/test/java/org/example/ProcessScenarioTest.java
-/camunda/src/test/java/org/example/ProcessUnitTest.java
+/app/src/test/java/org/example/InMemoryH2Test.java
+/app/src/test/java/org/example/ProcessTestCoverageProcessEnginePlugin.java
+/app/src/test/java/org/example/ProcessUnitTest.java
+/app/src/test/java/org/example/ProcessScenarioTest.java

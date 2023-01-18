@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="1" failures="0" name="org.example.InMemoryH2Test" time="0.267" errors="0" skipped="0">
+<testsuite tests="1" failures="0" name="org.example.InMemoryH2Test" time="0.284" errors="0" skipped="0">
   <properties>
     <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
     <property name="java.vm.version" value="17.0.5+8"/>
     <property name="sun.boot.library.path" value="/opt/java/openjdk/lib"/>
-    <property name="maven.multiModuleProjectDirectory" value="/camunda"/>
+    <property name="maven.multiModuleProjectDirectory" value="/app"/>
     <property name="java.vm.vendor" value="Eclipse Adoptium"/>
     <property name="java.vendor.url" value="https://adoptium.net/"/>
-    <property name="guice.disable.misplaced.annotation.check" value="true"/>
     <property name="path.separator" value=":"/>
+    <property name="guice.disable.misplaced.annotation.check" value="true"/>
     <property name="java.vm.name" value="OpenJDK 64-Bit Server VM"/>
     <property name="user.country" value="US"/>
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
-    <property name="user.dir" value="/camunda"/>
+    <property name="user.dir" value="/app"/>
     <property name="java.vm.compressedOopsMode" value="32-bit"/>
     <property name="java.runtime.version" value="17.0.5+8"/>
     <property name="os.arch" value="amd64"/>
@@ -48,7 +48,6 @@
     <property name="java.version" value="17.0.5"/>
     <property name="native.encoding" value="UTF-8"/>
     <property name="java.vendor" value="Eclipse Adoptium"/>
-    <property name="sun.stderr.encoding" value="UTF-8"/>
     <property name="maven.home" value="/usr/share/maven"/>
     <property name="file.separator" value="/"/>
     <property name="java.version.date" value="2022-10-18"/>
@@ -56,7 +55,6 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="sun.cpu.endian" value="little"/>
     <property name="java.vendor.version" value="Temurin-17.0.5+8"/>
-    <property name="sun.stdout.encoding" value="UTF-8"/>
   </properties>
-  <testcase classname="org.example.InMemoryH2Test" name="testHappyPath" time="0.267"/>
+  <testcase classname="org.example.InMemoryH2Test" name="testHappyPath" time="0.284"/>
 </testsuite>

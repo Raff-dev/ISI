@@ -21,7 +21,7 @@ public class GetDrinkFromList implements JavaDelegate{
         String to_lang = (String) execution.getVariable("desired_language");
         int n = rand.nextInt(10);
         //String URL = "https://eee414bf-303a-4f20-b48e-66b0bf3c0731.mock.pstmn.io/getDrinkByIdInGivenLanguage";
-        String URL = "http://localhost:8081/getDrinkByIdInGivenLanguage";
+        String URL = "http://mule:8081/getDrinkByIdInGivenLanguage";
         RestTemplate restTemplate = new RestTemplate();
         JSONObject jsonForMule = new JSONObject();
         jsonForMule.put("id", 11000+n);
