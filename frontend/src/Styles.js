@@ -1,4 +1,4 @@
-import { Card, Menu } from "semantic-ui-react";
+import { Menu } from "semantic-ui-react";
 import styled from "styled-components";
 
 export const StyledDiv = styled.div`
@@ -29,11 +29,17 @@ export const ErrorMEssage = styled.p`
     font-weight: bold;
 `;
 
-export const StyledCard = styled(Card)`
+export const StyledCard = styled.div`
     background-color: rgba(50, 50, 100, 1);
     border-radius: 10px;
     width: 400px;
     margin: 20px;
     padding: 40px;
     border: none;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10%;
+    border-radius: 10px;
 `;

@@ -13,13 +13,13 @@ const LANGUAGES = [
 
 export const LanguagePicker = ({ setLanguage }) => {
     return (
-        <Dropdown
-            placeholder="Select Language"
-            fluid
-            selection
-            defaultValue="pl"
-            options={LANGUAGES}
-            onChange={(e, { value }) => setLanguage(value)}
-        />
+        <>
+            <Dropdown
+                placeholder="Select Language"
+                selection
+                options={LANGUAGES}
+                onChange={(e, { value }) => setLanguage(value)}
+            />
+        </>
     );
 };
