@@ -27,6 +27,6 @@ public class GetNoDrinkClient implements JavaDelegate{
         jsonForApp.put("drinks", "Gentelmeni nie piją przed 12");
         HttpEntity<String> entity = new HttpEntity<String>(jsonForApp.toJSONString(), headersForApp);
         LOGGER.info(jsonForApp.toJSONString());
-        ResponseEntity<String> responseFromApp = restTemplateForApp.exchange("localhost:8001/enquiry", HttpMethod.POST, entity, String.class, headersForApp);
+        ResponseEntity<String> responseFromApp = restTemplateForApp.exchange("http://django1:8001/enquiry/", HttpMethod.POST, entity, String.class, headersForApp);
     }
 }
