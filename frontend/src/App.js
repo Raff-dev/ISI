@@ -23,10 +23,12 @@ const App = () => {
     const [language, setLanguage] = useState("pl");
 
     const fetchEnquiry = () => {
-        axios
-            .get(DJANGO_URL)
-            .then((data) => setDrinkData(data.data[-1]))
-            .catch(console.log);
+        axios.get(DJANGO_URL).then((data) => {
+            console.log(data);
+            let drinkData = data.data[data.data.length - 1];
+            drinkData.data = JSON.parse(drinkData.data);
+            setDrinkData(drinkData);
+        });
     };
 
     const sendEnquiry = () => {
@@ -38,27 +40,30 @@ const App = () => {
         // get current hour in integer
         setErrorMessage("");
 
-        let data = {
-            variables: {
-                hour: { value: new Date().getHours().toString(), type: "Integer" },
-                desired_language: { value: language },
-            },
-            withVariablesInReturn: true,
-        };
         let options = {
             headers: {
                 "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Credentials": true,
+                "Content-Type": "application/json",
+                withCredentials: true,
+            },
+            data: {
+                variables: {
+                    hour: { value: new Date().getHours().toString(), type: "Integer" },
+                    desired_language: { value: language },
+                    username: { value: username },
+                },
+                withVariablesInReturn: true,
             },
         };
-        fetchEnquiry();
-        // axios
-        //     .post(CAMUNDA_URL, data, options)
-        //     .then((res) => fetchEnquiry())
-        //     .catch((error) => {
-        //         setErrorMessage("Request was unsuccessful: " + error);
-        //         console.error("Error:", error);
-        //     });
+        // fetchEnquiry();
+        axios
+            .post(CAMUNDA_URL, options)
+            .then((res) => fetchEnquiry())
+            .catch((error) => {
+                setErrorMessage("Request was unsuccessful: " + error);
+                console.error("Error:", error);
+            });
     };
 
     return (
@@ -83,8 +88,8 @@ const App = () => {
                         GET RECIPE
                     </Button>
                     <br />
-                    {drinkData ? <JsonCard data={drinkData} /> : null}
                 </StyledCard>
+                {drinkData ? <JsonCard data={drinkData} /> : null}
             </StyledDiv>
         </FullscreenDiv>
     );
