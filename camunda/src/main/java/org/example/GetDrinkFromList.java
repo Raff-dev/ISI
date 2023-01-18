@@ -47,7 +47,7 @@ public class GetDrinkFromList implements JavaDelegate{
         HttpHeaders headersForApp = new HttpHeaders();
         headersForApp.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<String> entityToApp = new HttpEntity<String>(responseBody, headersForApp);
+        HttpEntity<String> entityToApp = new HttpEntity<String>(jsonToResponse.toJSONString(), headersForApp);
         ResponseEntity<String> responseFromApp;
         try {
             responseFromApp = restTemplate.exchange("http://django1:8001/enquiry/", HttpMethod.POST, entityToApp, String.class, headersForApp);
