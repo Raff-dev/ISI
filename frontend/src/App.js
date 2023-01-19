@@ -39,31 +39,31 @@ const App = () => {
         }
         // get current hour in integer
         setErrorMessage("");
+        fetchEnquiry();
 
-        let options = {
-            headers: {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Credentials": true,
-                "Content-Type": "application/json",
-                withCredentials: true,
-            },
-            data: {
-                variables: {
-                    hour: { value: new Date().getHours().toString(), type: "Integer" },
-                    desired_language: { value: language },
-                    username: { value: username },
-                },
-                withVariablesInReturn: true,
-            },
-        };
-        // fetchEnquiry();
-        axios
-            .post(CAMUNDA_URL, options)
-            .then((res) => fetchEnquiry())
-            .catch((error) => {
-                setErrorMessage("Request was unsuccessful: " + error);
-                console.error("Error:", error);
-            });
+        // let options = {
+        //     headers: {
+        //         "Access-Control-Allow-Origin": "*",
+        //         "Access-Control-Allow-Credentials": true,
+        //         "Content-Type": "application/json",
+        //         withCredentials: true,
+        //     },
+        //     data: {
+        //         variables: {
+        //             hour: { value: new Date().getHours().toString(), type: "Integer" },
+        //             desired_language: { value: language },
+        //             username: { value: username },
+        //         },
+        //         withVariablesInReturn: true,
+        //     },
+        // };
+        // axios
+        //     .post(CAMUNDA_URL, options)
+        //     .then((res) => fetchEnquiry())
+        //     .catch((error) => {
+        //         setErrorMessage("Request was unsuccessful: " + error);
+        //         console.error("Error:", error);
+        //     });
     };
 
     return (
