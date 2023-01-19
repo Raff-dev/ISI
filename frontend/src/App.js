@@ -25,8 +25,14 @@ const App = () => {
     const fetchEnquiry = () => {
         axios.get(DJANGO_URL).then((data) => {
             console.log(data);
+
             let drinkData = data.data[data.data.length - 1];
-            drinkData.data = JSON.parse(drinkData.data);
+            // check if drinkData.data is json object
+            if (drinkData.data[0] === "{") {
+                drinkData.data = JSON.parse(drinkData.data);
+            } else {
+                drinkData.data = tr[language];
+            }
             setDrinkData(drinkData);
         });
     };
@@ -37,7 +43,7 @@ const App = () => {
             setErrorMessage("Both username and language are required.");
             return;
         }
-        // get current hour in integer
+
         setErrorMessage("");
         fetchEnquiry();
 
@@ -96,3 +102,13 @@ const App = () => {
 };
 
 export default App;
+
+const tr = {
+    pl: "Gentelmeni nie piją przed 12",
+    en: "Gentlemen don't drink before 12",
+    de: "Herren trinken nicht vor 12",
+    es: "Los señores no beben antes de las 12",
+    fr: "Messieurs ne buvez pas avant 12h",
+    it: "I signori non bevono prima delle 12",
+    pt: "Senhores não bebam antes das 12",
+};
